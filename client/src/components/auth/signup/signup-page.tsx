@@ -1,18 +1,33 @@
 import React, { useState } from 'react';
-import Layout from '../../layout/Layout';
+import { useRouter } from 'next/router';
 
-export default function SigninPage() {
+import Layout from '../../layout/Layout';
+import useRequest, { HttpMethod } from '../../../hooks/useRequest';
+
+export default function SignupPage(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
+  const { doRequest, errors } = useRequest({
+    url: '/api/users/signup',
+    method: HttpMethod.POST,
+    body: { email, password },
+  });
 
-  const onSubmit = (ev: React.FormEvent) => {
+  const onSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
-    console.log({ email, password });
+
+    doRequest<{ email: string; id: string }>()
+      .then(() => {
+        router.push('/');
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   return (
-    <Layout>
-      <h1>Sign In</h1>
+    <Layout {...props} title={'Sign up'}>
       <form onSubmit={onSubmit}>
         <div className="form-group">
           <label htmlFor="email">Email address</label>
@@ -40,7 +55,16 @@ export default function SigninPage() {
             onChange={(ev) => setPassword(ev.target.value)}
           />
         </div>
-
+        {!!errors && (
+          <div className="alert alert-danger">
+            <h4>Ooops...</h4>
+            <ul className="my-0">
+              {errors.map((err, index) => (
+                <li key={index}>{err.message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         <button type="submit" className="btn btn-primary">
           Submit
         </button>

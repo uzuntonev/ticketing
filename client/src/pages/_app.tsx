@@ -1,11 +1,16 @@
-import { AppProps } from 'next/app';
-import Head from 'next/head';
-
 import 'bootstrap/dist/css/bootstrap.css';
+import React from 'react';
+import Head from 'next/head';
+import { AppProps } from 'next/dist/next-server/lib/router/router';
 
-export default function CustomApp({ Component, pageProps }: AppProps) {
+import AppNavBar from '../components/layout/AppNavBar';
+import buildClient from '../api/build-client';
+import AuthProvider from '../context/auth-context';
+
+
+const AppComponent = ({ Component, pageProps, currentUser }: AppProps) => {
   return (
-    <>
+    <AuthProvider>
       <Head>
         <title>Ticketing.dev</title>
         <meta
@@ -13,7 +18,27 @@ export default function CustomApp({ Component, pageProps }: AppProps) {
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
       </Head>
-      <Component {...pageProps} />
-    </>
+      <AppNavBar currentUser={currentUser} />
+
+      <Component {...pageProps} currentUser={currentUser} />
+    </AuthProvider>
   );
-}
+};
+
+AppComponent.getInitialProps = async appContext => {
+  const client = buildClient(appContext.ctx);
+  const { data } = await client.get('/api/users/currentuser');
+
+  let pageProps = {};
+
+  if (appContext.Component.getInitialProps) {
+    pageProps = await appContext.Component.getInitialProps(appContext.ctx);
+  }
+
+  return {
+    pageProps,
+    ...data
+  };
+};
+
+export default AppComponent;

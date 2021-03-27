@@ -1,3 +1,3 @@
-import signupPage from '../../components/auth/signup/signupPage';
+import signupPage from '../../components/auth/signup/signup-page';
 
 export default signupPage;

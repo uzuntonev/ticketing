@@ -27,3 +27,5 @@ build:
         manual:
           - src: 'src/**/*.tsx'
             dest: .
+          - src: 'src/**/*.ts'
+            dest: .

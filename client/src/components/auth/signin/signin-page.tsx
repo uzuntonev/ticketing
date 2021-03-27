@@ -4,12 +4,12 @@ import { useRouter } from 'next/router';
 import Layout from '../../layout/Layout';
 import useRequest, { HttpMethod } from '../../../hooks/useRequest';
 
-export default function SignupPage() {
+export default function SigninPage(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
   const { doRequest, errors } = useRequest({
-    url: '/api/users/signup',
+    url: '/api/users/signin',
     method: HttpMethod.POST,
     body: { email, password },
   });
@@ -18,7 +18,7 @@ export default function SignupPage() {
     ev.preventDefault();
 
     doRequest<{ email: string; id: string }>()
-      .then(({ data }) => {
+      .then(() => {
         router.push('/');
       })
       .catch((err) => {
@@ -27,8 +27,7 @@ export default function SignupPage() {
   };
 
   return (
-    <Layout>
-      <h1>Sign up</h1>
+    <Layout {...props} title={'Sign in'}>
       <form onSubmit={onSubmit}>
         <div className="form-group">
           <label htmlFor="email">Email address</label>
