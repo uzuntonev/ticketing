@@ -29,3 +29,11 @@ build:
             dest: .
           - src: 'src/**/*.ts'
             dest: .
+    - image: uzuntonev/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
