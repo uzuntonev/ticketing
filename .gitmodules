@@ -1,6 +1,4 @@
 [submodule "common"]
 	path = common
-	url = ./common
-[submodule "gutickets-common"]
-	path = gutickets-common
 	url = https://github.com/uzuntonev/gutickets-common.git
+
