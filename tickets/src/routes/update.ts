@@ -4,7 +4,8 @@ import {
   requireAuth,
   validateRequest,
   NotFoundError,
-  NotAuthorizedError
+  NotAuthorizedError,
+  BadRequestError
 } from '@gutickets/common';
 import { Ticket } from '../models/ticket';
 import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
@@ -28,6 +29,10 @@ router.put('/api/tickets/:id', requireAuth,
 
     if (!ticket) {
       throw new NotFoundError();
+    }
+
+    if (ticket.orderId) {
+      throw new BadRequestError('Cannot edit a reserved ticket');
     }
 
     if (req.currentUser!.id !== ticket.userId) {
