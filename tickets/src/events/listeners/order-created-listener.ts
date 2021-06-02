@@ -1,12 +1,12 @@
 import { Message } from 'node-nats-streaming';
 import { Listener, OrderCreatedEvent, Subjects } from '@gutickets/common';
-import { queueGroupeName } from './queue-group-name';
+import { queueGroupName } from './queue-group-name';
 import { Ticket } from '../../models/ticket';
 import { TicketUpdatedPublisher } from '../publishers/ticket-updated-publisher';
 
 export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
     readonly subject = Subjects.OrderCreated;
-    queueGroupeName = queueGroupeName;
+    queueGroupName = queueGroupName;
 
     async onMessage(data: OrderCreatedEvent['data'], msg: Message) {
         // Find the ticket that the order is reserving

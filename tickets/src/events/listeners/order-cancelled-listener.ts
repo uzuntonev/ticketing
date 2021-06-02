@@ -1,12 +1,12 @@
 import { Message } from 'node-nats-streaming';
 import { Listener, OrderCancelledEvent, Subjects } from '@gutickets/common';
-import { queueGroupeName } from './queue-group-name';
+import { queueGroupName } from './queue-group-name';
 import { Ticket } from '../../models/ticket';
 import { TicketUpdatedPublisher } from '../publishers/ticket-updated-publisher';
 
 export class OrderCancelledListener extends Listener<OrderCancelledEvent>{
     readonly subject = Subjects.OrderCancelled;
-    queueGroupeName = queueGroupeName;
+    queueGroupName = queueGroupName;
 
     async onMessage(data: OrderCancelledEvent['data'], msg: Message) {
         // Find the ticket that the order is reserving

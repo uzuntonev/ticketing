@@ -1,11 +1,11 @@
 import { Message } from 'node-nats-streaming';
 import { Subjects, Listener, TicketUpdatedEvent } from '@gutickets/common';
 import { Ticket } from '../../models/ticket';
-import { queueGroupeName } from './queue-group-name';
+import { queueGroupName } from './queue-group-name';
 
 export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
   readonly subject = Subjects.TicketUpdated;
-  queueGroupeName = queueGroupeName;
+  queueGroupName = queueGroupName;
 
   async onMessage(data: TicketUpdatedEvent['data'], msg: Message) {
     const { id, title, price } = data;
