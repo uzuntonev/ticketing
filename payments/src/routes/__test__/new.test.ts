@@ -3,8 +3,9 @@ import request from 'supertest';
 import { app } from '../../app';
 import { Order, OrderStatus } from '../../models/order';
 import { stripe } from '../../stripe';
+import { Payment } from '../../models/payment';
 
-jest.mock('../../stripe');
+// jest.mock('../../stripe');
 
 it('has a route handler listening to /api/payments for post request', async () => {
   const cookie = global.signin();
@@ -73,6 +74,44 @@ it('returns a 400 when purchasing a cancelled order', async () => {
 
 it('returns a 204 with valid inputs', async () => {
   const userId = mongoose.Types.ObjectId().toHexString();
+  const price = Math.floor(Math.random() * 100000);
+  const order = Order.build({
+    id: mongoose.Types.ObjectId().toHexString(),
+    userId: userId,
+    version: 0,
+    price,
+    status: OrderStatus.Created,
+  });
+  await order.save();
+
+  const cookie = global.signin(userId);
+  const response = await request(app)
+    .post('/api/payments')
+    .set('Cookie', cookie)
+    .send({
+      orderId: order.id,
+      token: 'tok_visa'
+    })
+    .expect(201);
+
+
+  const charges = await stripe.charges.list({ limit: 50 });
+  const stripeCharge = charges.data.find(charge => {
+    return charge.amount === price * 100
+  })
+
+  expect(stripeCharge).toBeDefined();
+
+  // expect(stripe.charges.create).toHaveBeenCalled();
+  // const chargeOptions = (stripe.charges.create as jest.Mock).mock.calls[0][0];
+
+  // expect(chargeOptions.source).toEqual('tok_visa');
+  // expect(chargeOptions.amount).toEqual(10 * 100);
+  // expect(chargeOptions.currency).toEqual('usd');
+});
+
+it('make payment successfully', async () => {
+  const userId = mongoose.Types.ObjectId().toHexString();
   const order = Order.build({
     id: mongoose.Types.ObjectId().toHexString(),
     userId: userId,
@@ -92,11 +131,9 @@ it('returns a 204 with valid inputs', async () => {
     })
     .expect(201);
 
-  expect(stripe.charges.create).toHaveBeenCalled();
+  const payment = await Payment.findOne({
+    orderId: order.id
+  });
 
-  const chargeOptions = (stripe.charges.create as jest.Mock).mock.calls[0][0];
-
-  expect(chargeOptions.source).toEqual('tok_visa');
-  expect(chargeOptions.amount).toEqual(10 * 100);
-  expect(chargeOptions.currency).toEqual('usd');
-})
+  expect(payment).not.toBeNull();
+});
