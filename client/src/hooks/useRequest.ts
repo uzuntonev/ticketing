@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import axios, { AxiosError } from 'axios'
+import { Token } from 'react-stripe-checkout'
 
 export enum HttpMethod {
   GET = 'get',
@@ -8,19 +9,19 @@ export enum HttpMethod {
   DELETE = 'delete'
 }
 
-type useRequestProps = {
+type useRequestProps<T> = {
   url: string,
   method: HttpMethod,
-  body?: any
+  body?: T
   onSuccess?: () => void
 }
 
-export default function useRequest({ url, method, body }: useRequestProps) {
+export default function useRequest<T>({ url, method, body }: useRequestProps<T>) {
   const [errors, setErrors] = useState(null)
 
-  const doRequest = <T>(): Promise<T> => {
+  const doRequest = <T>(params = {}): Promise<T> => {
     setErrors(null);
-    return axios[method](url, body).then(({ data }) => {
+    return axios[method](url, { ...body, ...params }).then(({ data }) => {
       return data;
     }).catch((err: AxiosError) => {
       setErrors(err.response.data.errors)

@@ -16,7 +16,9 @@ export default function AppNavBar({ currentUser }) {
   const links = [
     !isAuth && { label: 'Sign In', href: '/auth/signin' },
     !isAuth && { label: 'Sign Up', href: '/auth/signup' },
-    isAuth && { label: 'Sign Out', href: '/auth/signout' }
+    isAuth && { label: 'Create Ticket', href: '/tickets/new' },
+    isAuth && { label: 'My Orders', href: '/orders' },
+    isAuth && { label: 'Sign Out', href: '/auth/signout' },
   ]
     .filter(linkConfig => linkConfig)
     .map(({ label, href }) => {
